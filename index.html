@@ -1553,15 +1553,15 @@
             <li>
               Receiving short messages from [=MIDI devices=] - this
               enables getting input from keyboards, drum pads,
-              guitars, wind controllers, DJ / controllerist
-              controllers, and more, and using those messages as input
-              to control instruments and features in the [=Web Audio
-              API=] as well as other control scenarios. MIDI is the
-              protocol of choice for the multi-billion-dollar music
-              production industry for getting physical controllers
-              like knobs and buttons attached to your computer, both
-              in pro / prosumer audio and media applications as well
-              as consumer applications like Garageband.
+              guitars, wind controllers, DJ/controllerist controllers,
+              and more, and using those messages as input to control
+              instruments and features in the [=Web Audio API=] as
+              well as other control scenarios. MIDI is the protocol of
+              choice for the multi-billion-dollar music production
+              industry for getting physical controllers like knobs and
+              buttons attached to your computer, both in pro/prosumer
+              audio and media applications as well as consumer
+              applications like Garageband.
             </li>
             <li>
               Sending short messages to [=MIDI devices=] - it’s
@@ -1582,21 +1582,21 @@
               devices, [=System Exclusive=] messages are
               required. Some common MIDI commands are also sent as
               Universal [=System Exclusive=] messages, such as MIDI
-              Machine Control - generic start / stop / rewind /
-              fast-forward commands. Many devices use device-specific
-              [=System Exclusive=] messages to program patches, send
-              advanced controller messages, download firmware, etc.,
-              which are much-demanded scenarios for Web MIDI. Some
-              devices use [=System Exclusive=] as a direct control
-              protocol, as they can pack more data into a single
-              “message”, and most devices use [=System Exclusive=] as
-              a way to save and restore patches and configuration
-              information on less-expensive computer storage. Several
-              of the major music hardware producers have expressed
-              strong interest in using Web MIDI to provide web-based
-              configuration and programming interfaces to their
-              hardware. In short, disabling [=System Exclusive=]
-              altogether does not only disable high-end scenarios.
+              Machine Control - generic start/stop/rewind/fast-forward
+              commands. Many devices use device-specific [=System
+              Exclusive=] messages to program patches, send advanced
+              controller messages, download firmware, etc., which are
+              much-demanded scenarios for Web MIDI. Some devices use
+              [=System Exclusive=] as a direct control protocol, as
+              they can pack more data into a single “message”, and
+              most devices use [=System Exclusive=] as a way to save
+              and restore patches and configuration information on
+              less-expensive computer storage. Several of the major
+              music hardware producers have expressed strong interest
+              in using Web MIDI to provide web-based configuration and
+              programming interfaces to their hardware. In short,
+              disabling [=System Exclusive=] altogether does not only
+              disable high-end scenarios.
             </li>
           </ul>
           <p>
@@ -1606,11 +1606,11 @@
           <ul>
             <li>
               Sending short messages to a [=MIDI device=] - sending
-              note-on / note-off / controller messages could cause
-              sounds to be played by attached devices, including (on
-              Mac and Windows) any default virtual synthesizers. This
-              by itself does not cause any concerning exposure - you
-              can already make sounds without interaction, through
+              note-on/note-off/controller messages could cause sounds
+              to be played by attached devices, including (on Mac and
+              Windows) any default virtual synthesizers. This by
+              itself does not cause any concerning exposure - you can
+              already make sounds without interaction, through
               &lt;audio&gt; or Web Audio. Some attached devices might
               be professional lighting control systems, so it’s
               possible to control stage lighting; however, this is
@@ -1627,13 +1627,13 @@
             </li>
             <li>
               Receiving short messages from a [=MIDI device=] -
-              receiving note-on / note-off / controller messages would
+              receiving note-on/note-off/controller messages would
               not cause information exposure or security issues, as
               there is no identifying data being received, just a
               stream of controller messages - all of which must be
               initiated by the user on that MIDI device (except
               clock-type messages). This is analogous to listening to
-              keyboard, mouse, mobile / laptop accelerometer, touch
+              keyboard, mouse, mobile/laptop accelerometer, touch
               input or gamepad events; there is no additional
               information exposed, and all messages other than clock
               signals must be initiated by the user.
@@ -1660,7 +1660,7 @@
               to transfer data - it has to transcode into 7-bit - so
               it’s unlikely you could listen in for long periods. More
               explicit fingerprinting is a concern, as the patch
-              information / stored samples / user configuration could
+              information/stored samples/user configuration could
               uniquely identify the system. Again, this requires much
               device-specific code; there is not standardized “grab
               all patches and hash it” capability. This suggests that
