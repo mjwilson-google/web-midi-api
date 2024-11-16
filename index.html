@@ -1451,13 +1451,15 @@
                   messages=].  Many [=MIDI devices=] use [=System
                   Exclusive=] messages to perform firmware updates.
                   This is a common use of [=System Exclusive=]
-                  messages.  A small number of devices use
-                  non-[=System Exclusive=] messages to perform
-                  firmware updates.  Others may use out-of-band USB
-                  communication or require the user to connect a
-                  storage device directly to the [=MIDI device=] to
-                  perform firmware updates, which cannot be done using
-                  the Web MIDI API, and are not vulnerable.
+                  messages.  It is technically possible to make a
+                  device that uses non-[=System Exclusive=] messages
+                  to perform firmware updates, but this is not an
+                  intended use of non-[=System Exclusive=] messages.
+                  Other devices may use out-of-band USB communication
+                  or require the user to connect a storage device
+                  directly to the [=MIDI device=] to perform firmware
+                  updates, which cannot be done using the Web MIDI
+                  API, and are not vulnerable.
                 </li>
                 <li>
                   Allow firmware updates without explicit user
@@ -1546,8 +1548,8 @@
           </p>
           <p>
             Before discussing security concerns, it's useful to
-            examine what scenarios are enabled by MIDI mapped against
-            these features:
+            examine what scenarios are enabled by MIDI using these
+            features:
           </p>
           <ul>
             <li>
