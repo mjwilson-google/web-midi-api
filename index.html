@@ -1381,140 +1381,306 @@
           Security Considerations
         </h2>
         <p>
-          Separate from the fingerprinting concerns of identifying the available
-          ports are concerns around sending and receiving [=MIDI
-          messages=]. Those issues are explored in more depth below.
+          The first [=MIDI devices=] were released in 1983, before the
+          web platform and its security risks existed.  Many [=MIDI
+          devices=] are still in use long after their manufacturers
+          stopped supporting them.  [=MIDI=] has adapted to transports
+          beyond the original serial connection, such as FireWire,
+          USB, and Bluetooth.  This poses a security challenge, with a
+          long tail of devices from different eras that do not have
+          official support but are still actively in use, connected to
+          computers and the web in ways their designers did not
+          expect.
         </p>
-        <p>
-          In brief, the general categories of things you can do with MIDI ports
-          are:
-        </p>
-        <ol>
-          <li>Sending short messages (all messages except SysEx)
-          </li>
-          <li>Receiving short messages (all messages except SysEx)
-          </li>
-          <li>Sending SysEx messages. SysEx messages include both commonly
-          recognized MIDI Time Code and MIDI Sample Dump Standard, as well as
-          device-specific messages (like “patch control data for a Roland
-          Jupiter-80 synthesizer”) that do not apply to other devices.
-          </li>
-          <li>Receiving SysEx messages.
-          </li>
-        </ol>
-        <p>
-          The impact of each of these is:
-        </p>
-        <ol>
-          <li>Sending short messages: sending note-on/note-off/controller
-          messages would let you cause sounds to be played by attached devices,
-          including (on Mac and Windows) any default virtual synthesizers. This
-          by itself does not cause any concerning exposure - you can already
-          make sounds without interaction, through &lt;audio&gt;, Flash, or Web
-          Audio. Some attached devices might be professional lighting control
-          systems, so it’s possible you could control stage lighting; however,
-          this is extremely rare, and no known system has the ability to cause
-          lasting damage or information leakage based solely on short messages;
-          at worst, a malicious page could flash lights, and the user could
-          close the page and reset their lighting controller.
-          </li>
-          <li>Receiving short messages: receiving note-on/note-off/controller
-          messages would not cause any information exposure or security issues,
-          as there is no identifying data being received, just a stream of
-          controller messages - all of which must be initiated by the user on
-          that [=MIDI device=] (except clock-type messages). This is very
-          analogous to receiving keyboard or mouse events.
-          </li>
-          <li>Sending and Receiving SysEx. This is the biggest concern, because
-          it would be possible to write code that looked for system-specific
-          responses to sysex messages, which could identify the hardware
-          available, and then use it to download data - e.g. samples stored in a
-          sampler - or replace that data (erasing sample data or patches in the
-          device), although both these scenarios would have to be coded for a
-          particular device. It is also possible that some samplers might enable
-          a [=System Exclusive=] message to start recording a sample - so if the
-          sampler happened to have a dedicated microphone attached (uncommon in
-          practice, but possible), it would be possible to write code specific
-          to a particular device that could record a short sample of sound and
-          then upload it to the network without further user intervention. (You
-          could not stream audio from the device, and most samplers have fairly
-          limited memory, and MIDI Sample Dump sysex is a slow way to transfer
-          data - it has to transcode into 7-bit - so it’s unlikely you could
-          listen in for long periods.) More explicit fingerprinting is a
-          concern, as the patch information/stored samples/user configuration
-          could uniquely identify the system (although again, this requires much
-          device-specific code; there is not standardized “grab all patches and
-          hash it” capability.) This does suggest that [=System Exclusive=]
-          messages are in a security category of their own.
-          </li>
-        </ol>
-        <p>
-          It's also useful to examine what scenarios are enabled by MIDI,
-          mapped against these features:
-        </p>
-        <ol>
-          <li>Receiving short messages. This is the most attractive scenario for
-          Web MIDI, as it enables getting input from keyboards, drum pads,
-          guitars, wind controllers, DJ/controllerist controllers, and more, and
-          use those messages as input to control instruments and features in
-          the [=Web Audio API=] as well as other control scenarios (MIDI is
-          the protocol of choice for the multi-billion-dollar music production
-          industry for getting physical controllers like knobs and buttons
-          attached to your computer, both in pro/prosumer audio and media
-          applications as well as consumer applications like Garageband.)
-          </li>
-          <li>Sending short messages - it’s tempting to say sending is
-          significantly less interesting, as the scenario of attached output
-          devices like hardware synthesizers is less common in today's market.
-          The major exception to this is that many of the MIDI controllers have
-          external host control of their indicator lights, and this makes them
-          dramatically more useful. For example, the very popular Novation
-          Launchpad controller uses MIDI note on/off messages sent to it to
-          turn on/off and change colors of the buttons. The same is true of
-          nearly all DJ controllers.
-          </li>
-          <li>Sending and receiving SysEx - obviously, for more advanced
-          communication with high-end hardware devices, SysEx is required.
-          Unfortunately, some common MIDI commands are also sent as [=System
-          Exclusive=] messages (MIDI Machine Control, for example - generic
-          start/stop/rew/ffw commands) - and many devices use [=System
-          Exclusive=] to program patches, send advanced controller messages,
-          download firmware, etc., which are much-demanded scenarios for Web
-          MIDI. Some devices use sysex as a direct control protocol, as they can
-          pack more data into a single “message”, and most devices use SysEx as
-          way to save and restore patches and configuration information on
-          less-expensive computer storage. Several of the major music hardware
-          producers have expressed strong interest in using Web MIDI to provide
-          web-based configuration and programming interfaces to their hardware.
-          In short, disabling sysex altogether does not only disable high-end
-          scenarios.
-          </li>
-        </ol>
-        <p>
-          The additional security concern for receiving short messages is also
-          small - it’s analogous to listening to keyboard, mouse, mobile/laptop
-          accelerometer, touch input or gamepad events; there is no additional
-          information exposed, and all messages other than clock signals must
-          be initiated by the user.
-        </p>
-        <p>
-          The additional concerns about sending short messages are analogous to
-          any audio output - you cannot overwrite user information or expose
-          use information, but you can make sounds happen, change patches, or
-          (in rare configurations) toggle lights - but non-destructively, and
-          not persistently.
-        </p>
-        <p>
-          [=System Exclusive=], on the other hand, has a much less bounded
-          potential, and it seems that distinguishing requests for SysEx
-          separately in the API is a good idea, in order to more carefully
-          provide user security hooks. The <a data-lt=
-          "Navigator.requestMIDIAccess">suggested security model</a> explicitly
-          allows user agents to require the user's approval before giving access
-          to [=MIDI devices=], although it is not currently required to prompt
-          the user for this approval - but it also detailed that [=System
-          Exclusive=] support must be requested as part of that request.
-        </p>
+        <section>
+          <h2>
+            Malicious Firmware Updates
+          </h2>
+          <p>
+            One concerning theoretical attack involves malicious
+            firmware updates for USB-[=MIDI devices=].  USB devices in
+            general can do things based on their device descriptor,
+            which is sent from the USB device itself.  If a USB-[=MIDI
+            device=]'s firmware can modify what descriptor is sent, it
+            could make itself act as a human interface device.  This
+            could allow a malicious website to read or inject
+            keystrokes or other events on the host computer, which
+            could lead to a total compromise of the system.
+          </p>
+          <p>
+            The attack would proceed as follows:
+          </p>
+          <ol>
+            <li>
+              A malicious site tricks the user into granting Web MIDI
+              permission.
+            </li>
+            <li>
+              The malicious site enumerates the [=MIDI devices=]
+              connected to the user's machine, and identifies a
+              vulnerable device.
+            </li>
+            <li>
+              The malicious site sends a pre-crafted set of [=MIDI
+              messages=] to the vulnerable device, compromising the
+              device by overwriting its firmware and adding a human
+              interface device to its USB descriptor.
+            </li>
+            <li>
+              The compromised device injects keystrokes to download or
+              otherwise reproduce a pre-crafted security exploit and
+              execute it, compromising the system.
+            </li>
+          </ol>
+          <p>
+            In order to enable to the above attack, a [=MIDI device=]
+            would need <em>all</em> of the following to be true:
+          </p>
+          <ul>
+            <li>
+              Be vulnerable to malicious firmware
+              updates.  <em>All</em> of the following must be true:
+              <ul>
+                <li>
+                  Have user-programmable firmware.  Many [=MIDI
+                  devices=] have re-programmable firmware.  Those that
+                  do not are not vulnerable.
+                </li>
+                <li>
+                  Allow firmware updates via sending [=MIDI
+                  messages=].  Many [=MIDI devices=] use [=System
+                  Exclusive=] messages to perform firmware updates.
+                  This is a common use of [=System Exclusive=]
+                  messages.  It is technically possible to make a
+                  device that uses non-[=System Exclusive=] messages
+                  to perform firmware updates, but this is not an
+                  intended use of non-[=System Exclusive=] messages.
+                  Other devices may use out-of-band USB communication
+                  or require the user to connect a storage device
+                  directly to the [=MIDI device=] to perform firmware
+                  updates, which cannot be done using the Web MIDI
+                  API, and are not vulnerable.
+                </li>
+                <li>
+                  Allow firmware updates without explicit user
+                  interaction on the device.  There are known [=MIDI
+                  devices=] which do not require any user interaction
+                  to initiate a firmware update.  Most [=MIDI
+                  devices=] require the user to place them in a
+                  special update mode first, such as by holding down a
+                  button or selecting a menu option, and are not
+                  vulnerable unless the attacker tricks the user into
+                  cooperating.
+                </li>
+              </ul>
+            </li>
+            <li>
+              Be a USB-[=MIDI device=].  Most modern [=MIDI devices=]
+              have a USB [=MIDI interface=].  Some older [=MIDI
+              devices=] only have a serial connection, and would not
+              enable this attack.
+            </li>
+            <li>
+              The [=MIDI device=]'s firmware would have to be able to
+              modify the USB controller's firmware.  Many [=MIDI
+              devices=] have USB controller firmware that is not
+              addressable from the main firmware, and would not enable
+              this attack.
+            </li>
+          </ul>
+          <p>
+            [=MIDI devices=] that are vulnerable to malicious firmware
+            updates but do not satisfy the other conditions cannot be
+            used with this attack to compromise the host system.  A
+            malicious firmware update could still cause these [=MIDI
+            devices=] to stop working or behave in undesired ways.
+          </p>
+          <p>
+            To mitigate this risk, implementers should emphasize the
+            following in their implementations:
+          </p>
+          <ul>
+            <li>
+              Implement <a data-lt="Navigator.requestMIDIAccess">requestMIDIAccess()</a>
+              in a way that informs users of the risks of firmware
+              updates, such as through text in permission prompts.
+            </li>
+            <li>
+              Implement SecureContext as specified to prevent
+              user-initiated legitimate firmware updates from being
+              modified.
+            </li>
+            <li>
+              Handle the sysex parameter as specified, to encourage
+              developers to only request [=System Exclusive=] messages
+              when necessary, since most firmware updates use [=System
+              Exclusive=] messages.
+            </li>
+          </ul>
+          <p>
+            Explicitly allowing or blocking lists of known MIDI
+            devices may also help mitigate this specific attack, but
+            many small companies and individuals build MIDI devices,
+            and many MIDI devices are no longer supported, so doing
+            this would significantly reduce the usability of the Web
+            MIDI API.
+          </p>
+        </section>
+        <section>
+          <h2>
+            Additional Security Considerations
+          </h2>
+          <p>
+            Separate from the fingerprinting concerns of identifying
+            the available ports are concerns around sending and
+            receiving [=MIDI messages=]. Those issues are explored in
+            more depth below.
+          </p>
+          <p>
+            MIDI messages can be divided into [=System Exclusive=]
+            messages, and short (non-[=System Exclusive=]) messages.
+            [=System Exclusive=] messages can be further subdivided
+            into Universal System Exclusive messages such as the
+            commonly recognized MIDI Time Code and MIDI Sample Dump
+            Standard, and device-specific messages like “patch control
+            data for a Roland Jupiter-80 synthesizer” that do not
+            apply to other devices.
+          </p>
+          <p>
+            Before discussing security concerns, it's useful to
+            examine what scenarios are enabled by MIDI using these
+            features:
+          </p>
+          <ul>
+            <li>
+              Receiving short messages from [=MIDI devices=] - this
+              enables getting input from keyboards, drum pads,
+              guitars, wind controllers, DJ/controllerist controllers,
+              and more, and using those messages as input to control
+              instruments and features in the [=Web Audio API=] as
+              well as other control scenarios. MIDI is the protocol of
+              choice for the multi-billion-dollar music production
+              industry for getting physical controllers like knobs and
+              buttons attached to your computer, both in pro/prosumer
+              audio and media applications as well as consumer
+              applications like Garageband.
+            </li>
+            <li>
+              Sending short messages to [=MIDI devices=] - it’s
+              tempting to say sending is significantly less
+              interesting, as the scenario of attached output devices
+              like hardware synthesizers is less common in today's
+              market. The major exception to this is that many MIDI
+              controllers have external host control of their
+              indicator lights, and this makes them dramatically more
+              useful. For example, the very popular Novation Launchpad
+              controller uses MIDI note on/off messages sent to it to
+              turn on/off and change colors of the buttons. The same
+              is true of nearly all DJ controllers.
+            </li>
+            <li>
+              Sending and receiving [=System Exclusive=] messages -
+              for more advanced communication with high-end hardware
+              devices, [=System Exclusive=] messages are
+              required. Some common MIDI commands are also sent as
+              Universal [=System Exclusive=] messages, such as MIDI
+              Machine Control - generic start/stop/rewind/fast-forward
+              commands. Many devices use device-specific [=System
+              Exclusive=] messages to program patches, send advanced
+              controller messages, download firmware, etc., which are
+              much-demanded scenarios for Web MIDI. Some devices use
+              [=System Exclusive=] as a direct control protocol, as
+              they can pack more data into a single “message”, and
+              most devices use [=System Exclusive=] as a way to save
+              and restore patches and configuration information on
+              less-expensive computer storage. Several of the major
+              music hardware producers have expressed strong interest
+              in using Web MIDI to provide web-based configuration and
+              programming interfaces to their hardware. In short,
+              disabling [=System Exclusive=] altogether does not only
+              disable high-end scenarios.
+            </li>
+          </ul>
+          <p>
+            The potential security impact of each of these is as
+            follows:
+          </p>
+          <ul>
+            <li>
+              Sending short messages to a [=MIDI device=] - sending
+              note-on/note-off/controller messages could cause sounds
+              to be played by attached devices, including (on Mac and
+              Windows) any default virtual synthesizers. This by
+              itself does not cause any concerning exposure - you can
+              already make sounds without interaction, through
+              &lt;audio&gt; or Web Audio. Some attached devices might
+              be professional lighting control systems, so it’s
+              possible to control stage lighting; however, this is
+              rare, and no known system has the ability to cause
+              lasting damage or information leakage based solely on
+              short messages.  At worst, a malicious page could flash
+              lights, and the user could close the page and reset
+              their lighting controller.  The additional concerns
+              about sending short messages are analogous to any audio
+              output - you cannot overwrite user information or expose
+              user information, but you can make sounds happen, change
+              patches, or (in rare configurations) toggle lights - but
+              non-destructively, and not persistently.
+            </li>
+            <li>
+              Receiving short messages from a [=MIDI device=] -
+              receiving note-on/note-off/controller messages would
+              not cause information exposure or security issues, as
+              there is no identifying data being received, just a
+              stream of controller messages - all of which must be
+              initiated by the user on that MIDI device (except
+              clock-type messages). This is analogous to listening to
+              keyboard, mouse, mobile/laptop accelerometer, touch
+              input or gamepad events; there is no additional
+              information exposed, and all messages other than clock
+              signals must be initiated by the user.
+            </li>
+            <li>
+              Sending and receiving [=System Exclusive=] messages -
+              this is the biggest concern, because it is possible to
+              write code that looks for system-specific responses to
+              [=System Exclusive=] messages, which could identify the
+              hardware available, and then use it to download data -
+              e.g. samples stored in a sampler - or replace that data
+              (erasing sample data or patches in the device), although
+              both these scenarios would have to be coded for a
+              particular device. It is also possible that some
+              samplers might enable a System Exclusive message to
+              start recording a sample - so if the sampler happened to
+              have a dedicated microphone attached (uncommon in
+              practice, but possible), it would be possible to write
+              code specific to a particular device that could record a
+              short sample of sound and then upload it to the network
+              without further user intervention. You could not stream
+              audio from the device, and most samplers have fairly
+              limited memory, and MIDI Sample Dump sysex is a slow way
+              to transfer data - it has to transcode into 7-bit - so
+              it’s unlikely you could listen in for long periods. More
+              explicit fingerprinting is a concern, as the patch
+              information/stored samples/user configuration could
+              uniquely identify the system. Again, this requires much
+              device-specific code; there is not standardized “grab
+              all patches and hash it” capability. This suggests that
+              [=System Exclusive=] messages are in a security category
+              of their own. Because of this less bounded potential, it
+              seems that distinguishing requests for SysEx separately
+              in the API is a good idea, in order to more carefully
+              provide user security
+              hooks. The <a data-lt="Navigator.requestMIDIAccess">suggested
+              security model</a> explicitly allows user agents to
+              require the user's approval before giving access to MIDI
+              devices, although it is not currently required to prompt
+              the user for this approval - but it is also detailed
+              that System Exclusive support must be requested as part
+              of that request.
+            </li>
+          </ul>
+        </section>
       </section>
     </section>
     <section>
