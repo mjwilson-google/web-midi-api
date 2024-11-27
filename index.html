@@ -451,25 +451,9 @@
           {{MIDIInput}} instance and key is its ID.
         </p>
         <p>
-          This type is used to represent all the currently available MIDI input
-          ports. This enables:
+          This type is used to represent all the currently available [=MIDI input
+          ports=].
         </p>
-        <pre class="example">    // to tell how many entries there are:
-    let numberOfMIDIInputs = inputs.size;
-
-    // add each of the ports to a &lt;select&gt; box
-    inputs.forEach( function( port, key ) {
-      let opt = document.createElement("option");
-      opt.text = port.name;
-      document.getElementById("inputportselector").add(opt);
-    });
-
-    // or you could express in ECMAScript 6 as:
-    for (let input of inputs.values()) {
-      let opt = document.createElement("option");
-      opt.text = input.name;
-      document.getElementById("inputportselector").add(opt);
-    }</pre>
       </section>
       <section data-dfn-for="MIDIOutputMap">
         <h3 id="MIDIOutputMap">
@@ -486,24 +470,8 @@
         </p>
         <p>
           This type is used to represent all the currently available [=MIDI
-          output ports=]. This enables:
+          output ports=].
         </p>
-        <pre class="example">    // to tell how many entries there are:
-    let numberOfMIDIOutputs = outputs.size;
-
-    // add each of the ports to a &lt;select&gt; box
-    outputs.forEach( function( port, key ) {
-      let opt = document.createElement("option");
-      opt.text = port.name;
-      document.getElementById("outputportselector").add(opt);
-    });
-
-    // or you could express in ECMAScript 6 as:
-    for (let output of outputs.values()) {
-      let opt = document.createElement("option");
-      opt.text = output.name;
-      document.getElementById("outputportselector").add(opt);
-    }</pre>
       </section>
       <section data-dfn-for="MIDIAccess" data-link-for="MIDIAccess">
         <h2 id="MIDIAccess">

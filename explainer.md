@@ -62,6 +62,30 @@ function listInputsAndOutputs( midiAccess ) {
 }
 ```
 
+### Adding inputs and outputs to a <select> box
+
+```js
+// to tell how many entries there are:
+let numberOfMIDIInputs = inputs.size;
+
+// add each of the ports to a <select> box
+for (let input of inputs.values()) {
+  let opt = document.createElement("option");
+  opt.text = input.name;
+  document.getElementById("inputportselector").add(opt);
+}
+
+// to tell how many entries there are:
+let numberOfMIDIOutputs = outputs.size;
+
+// add each of the ports to a <select> box
+for (let output of outputs.values()) {
+  let opt = document.createElement("option");
+  opt.text = output.name;
+  document.getElementById("outputportselector").add(opt);
+}
+```
+
 ### Handling MIDI Input
 This example prints incoming MIDI messages on a single arbitrary input port to
 the console log.
@@ -69,14 +93,17 @@ the console log.
 ```js
 function onMIDIMessage( event ) {
   let str = "MIDI message received at timestamp " + event.timeStamp + "[" + event.data.length + " bytes]: ";
-  for (let i=0; i&lt;event.data.length; i++) {
+  for (let i=0; i<event.data.length; i++) {
     str += "0x" + event.data[i].toString(16) + " ";
   }
   console.log( str );
 }
 
-function startLoggingMIDIInput( midiAccess, indexOfPort ) {
-  midiAccess.inputs.forEach( function(entry) {entry.onmidimessage = onMIDIMessage;});
+function startLoggingMIDIInput( midiAccess ) {
+  for (let entry of midiAccess.inputs) {
+    let input = entry[1];
+    input.onmidimessage = onMIDIMessage;
+  }
 }
 ```
 
@@ -169,7 +196,7 @@ function onMIDIInit(midi) {
 
       let haveAtLeastOneDevice=false;
       let inputs=midiAccess.inputs.values();
-      for ( let input = inputs.next(); input &amp;& !input.done; input = inputs.next()) {
+      for ( let input = inputs.next(); input && !input.done; input = inputs.next()) {
         input.value.onmidimessage = MIDIMessageEventHandler;
         haveAtLeastOneDevice = true;
       }
