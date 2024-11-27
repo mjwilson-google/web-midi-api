@@ -62,7 +62,7 @@ function listInputsAndOutputs( midiAccess ) {
 }
 ```
 
-### Adding inputs and outputs to a <select> box
+### Adding inputs and outputs to select boxes
 
 ```js
 // to tell how many entries there are:
