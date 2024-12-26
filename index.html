@@ -1064,7 +1064,10 @@
                   {{DOMHighResTimeStamp}} - a number of milliseconds measured
                   relative to the navigation start of the document). If
                   <code>timestamp</code> is set to zero (or another time in the
-                  past), the data is to be sent as soon as possible.
+                  past), the data is to be sent as soon as possible. Multiple
+                  calls to <code>send()</code> with the same timestamp must
+                  result in the data being sent in the order the calls were
+                  made.
                 </dd>
               </dl>
             </dd>
