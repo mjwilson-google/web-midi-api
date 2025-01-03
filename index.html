@@ -273,6 +273,10 @@
               If the user declines or the call is denied for any other reason,
               the Promise is rejected with a {{DOMException}} parameter.
             </p>
+            <p>
+              Multiple calls to {{requestMIDIAccess()}} are allowed
+              even if not all vended Promises have settled.
+            </p>
             <p data-link-for="Navigator">
               When the {{requestMIDIAccess()}} method is called, the user agent
               MUST run the following steps:
@@ -699,6 +703,10 @@
               to it are dropped.
             </p>
             <p>
+              Multiple calls to <code>open()</code> are allowed even
+              if not all vended Promises have settled.
+            </p>
+            <p>
               When this method is called, the user agent MUST run the
               <dfn data-lt="open the port">algorithm to open a MIDIPort</dfn>:
             </p>
@@ -835,6 +843,10 @@
               systems, the port is available to other applications), the vended
               Promise is resolved. If the port is disconnected, the Promise is
               rejected.
+            </p>
+            <p>
+              Multiple calls to <code>close()</code> are allowed even
+              if not all vended Promises have settled.
             </p>
             <p>
               When the <code>close()</code> method is called, the user agent
