@@ -666,8 +666,9 @@
               Makes the [=MIDI device=] corresponding to the {{MIDIPort}}
               explicitly available. Note that this call is NOT required in order
               to use the {{MIDIPort}}- calling <code>send()</code> on a
-              {{MIDIOutput}} or attaching a MIDIMessageEvent handler on a
-              {{MIDIInput}} will cause an implicit open(). The underlying
+              {{MIDIOutput}}, attaching a MIDIMessageEvent {{EventHandler}} on a
+              {{MIDIInput}}, or adding a MIDIMessageEvent {{EventListener}} on a
+              {{MIDIInput}}  will cause an implicit open(). The underlying
               implementation may not need to do anything in response to this
               call. However, some underlying implementations may not be able to
               support shared access to [=MIDI devices=], so using explicit
