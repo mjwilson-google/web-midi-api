@@ -874,12 +874,13 @@
                 <p>
                   If the port is an input port, skip to the next step. If the
                   output port's <a data-lt="MIDIPort.state">.state</a> is not
-                  <a data-lt="MIDIPortDeviceState.connected">"connected"</a>,
-                  clear all pending send data and skip to the next step. Clear
-                  any pending send data in the system with timestamps in the
-                  future, then finish sending any send messages with no
-                  timestamp or with a timestamp in the past or present, prior
-                  to proceeding to the next step.
+                  <a data-lt="MIDIPortDeviceState.connected">"connected"</a>
+                  or if its .connection is "pending", clear all pending send
+                  data and skip to the next step. Clear any pending send data
+                  in the system with timestamps in the future, then finish
+                  sending any send messages with no timestamp or with a
+                  timestamp in the past or present, prior to proceeding to
+                  the next step.
                 </p>
               </li>
               <li>
@@ -904,11 +905,6 @@
                   <em><b>closed</b></em>: Call <var>resolver</var>'s
                   <code>accept(value)</code> method with <var>port</var> as
                   value argument.
-                </p>
-              </li>
-              <li>
-                <p>
-                  Terminate these steps.
                 </p>
               </li>
             </ol>
